@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Dambool game</title>
+  </head>
+
+  <body onload="handleStartGame()">
+    <div class="backgroundDarkener"></div>
+    <div class="container">
+      <div class="deckArea" id="deckArea">
+        <!-- <div class="trumpCard" id="trumpCard"></div> -->
+      </div>
+
+      <div class="gameArea">
+        <hr class="divider" />
+
+        <div class="Player1Hand" id="Player1Hand">
+          <!-- <div class="card"></div>
+            <div class="card"></div> -->
+        </div>
+
+        <hr class="divider" />
+
+        <div class="battleArea" id="battleArea">
+          <!-- <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div>
+          <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div>
+          <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div>
+          <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div>
+          <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div>
+          <div class="cardPair">
+            <div class="attackCard"></div>
+            <div class="defenceCard"></div>
+          </div> -->
+        </div>
+
+        <hr class="divider" />
+
+        <div class="Player2Hand" id="Player2Hand">
+          <!-- <div class="card"></div>
+            <div class="card"></div> -->
+        </div>
+
+        <hr class="divider" />
+
+        <div class="controls">
+
+          <!-- <div class="iconContainer">
+            <div class="iconShadow"></div>
+            <div class="icon" id="searchIcon">⚙️</div>
+          </div>
+
+          <div class="iconContainer">
+            <div class="iconShadow"></div>
+            <div class="icon" id="searchIcon">🔇</div>
+          </div>
+
+          <div class="iconContainer">
+            <div class="iconShadow"></div>
+            <div class="icon" id="searchIcon">🔊</div>
+          </div> -->
+
+           <div class="iconContainer" onClick="handleBeaten()">
+            <div class="iconShadow"></div>
+            <div class="icon" id="searchIcon">🔄</div>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <script src="notes.js"></script>
+  </body>
+</html>
