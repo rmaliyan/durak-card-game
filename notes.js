@@ -1,4 +1,4 @@
-const SUITS = ["♠", "♥", "♦", "♣"];
+const SUITS = ["♠", "♣", "♥", "♦"];
 const RANKS = ["6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 
 const bell = new Audio("./assets/sounds/bell.mp3");
@@ -16,7 +16,6 @@ const gameStates = {
   player2Turn: 1,
   endGame: 2,
 };
-
 class Card {
   suit;
   rank;
@@ -42,18 +41,16 @@ class Card {
   }
 
   compare(secondCard, trumpSuit) {
-    if (this.suit == trumpSuit && secondCard.suit != trumpSuit) {
+    if (this.suit === trumpSuit && secondCard.suit !== trumpSuit) {
       return 1;
     }
 
-    if (this.suit != trumpSuit && secondCard.suit == trumpSuit) {
+    if (this.suit !== trumpSuit && secondCard.suit === trumpSuit) {
       return -1;
     }
-
-    if (this.evaluateRank() == secondCard.evaluateRank()) {
-      return this.evaluateSuit() == secondCard.evaluateSuit();
+    if (this.evaluateSuit() === secondCard.evaluateSuit()) {
+      return this.evaluateRank() - secondCard.evaluateRank();
     }
-
     return this.evaluateRank() - secondCard.evaluateRank();
   }
 }
@@ -81,8 +78,9 @@ class Deck {
   }
 
   dealOne() {
+    const dealedCard = this.#deck[this.#topCard];
     this.#topCard++;
-    return this.#deck[this.#topCard - 1];
+    return dealedCard;
   }
 
   getBottomCard() {
@@ -141,17 +139,17 @@ class Hand {
     return playCard;
   }
 
-  sortCards(trumpSuit) {
-    for (let i = 0; i < this.cards.length - 1; i++) {
-      for (let j = 0; j < this.cards.length - i - 1; j++) {
-        if (this.cards[j].compare(this.cards[j + 1], trumpSuit) < 0) {
-          const tmp = this.cards[j];
-          this.cards[j] = this.cards[j + 1];
-          this.cards[j + 1] = tmp;
-        }
-      }
-    }
-  }
+  // sortCards(trumpSuit) {
+  //   for (let i = 0; i < this.cards.length - 1; i++) {
+  //     for (let j = 0; j < this.cards.length - i - 1; j++) {
+  //       if (this.cards[j].compare(this.cards[j + 1], trumpSuit) > 0) {
+  //         const tmp = this.cards[j];
+  //         this.cards[j] = this.cards[j + 1];
+  //         this.cards[j + 1] = tmp;
+  //       }
+  //     }
+  //   }
+  // }
 }
 
 class Game {
@@ -161,8 +159,8 @@ class Game {
   trumpCard;
   battleArea;
   beatenCards;
-
   gameState;
+  endGameText;
 
   newStart() {
     this.gameState = gameStates.player1Turn;
@@ -244,6 +242,16 @@ class Game {
       this.player2Hand.cards.length == 0
     ) {
       this.gameState = gameStates.endGame;
+      if (
+        this.player1Hand.cards.length == 0 &&
+        this.player2Hand.cards.length == 0
+      ) {
+        endGameText = "Draw";
+      } else if (this.player1Hand.cards.length == 0) {
+        endGameText = "You win";
+      } else {
+        endGameText = "Soulless machine wins";
+      }
       return true;
     }
   }
@@ -251,7 +259,7 @@ class Game {
   beaten() {
     const { attackHand, defenceHand } = this.#getTurn();
     if (!this.battleArea.isDefeated()) {
-      return;
+      return false;
     }
     const pairs = this.battleArea.cardPairs;
     for (const pair of pairs) {
@@ -268,6 +276,7 @@ class Game {
       this.gameState = gameStates.player1Turn;
     }
     this.checkEnd();
+    return true;
   }
 
   findDefendablePairs(cardIndex) {
@@ -471,6 +480,8 @@ function updateGameUI() {
       showCard(defenceCardDiv.id, pair.defenceCard);
     }
   });
+
+  logState();
 }
 
 function playRandomCardSound() {
@@ -511,30 +522,42 @@ function handleCardClick(cardIndex) {
 }
 
 function handleBeaten() {
-  game.beaten();
-  updateGameUI();
-  if (game.gameState !== gameStates.endGame) {
-    setTimeout(() => {
-      opponent.tryAttack();
-      updateGameUI();
-    }, 1000);
+  if (game.gameState === gameStates.player1Turn) {
+    if (game.beaten()) {
+      if (game.gameState !== gameStates.endGame) {
+        setTimeout(() => {
+          opponent.tryAttack();
+          updateGameUI();
+        }, 1000);
+      }
+    }
   }
+  else if (game.gameState === gameStates.player2Turn) {
+    game.collectCards();
+    if (game.gameState !== gameStates.endGame) {
+      setTimeout(() => {
+        opponent.tryAttack();
+        updateGameUI();
+      }, 1000);
+    }
+  }  
+  updateGameUI();
 }
 
 function handleAttackCardClick(pairIndex) {
   if (awaitingCardIndex == null) {
     return;
   }
-  if (currentDefendablePairs.contains(pairIndex)){
+  if (currentDefendablePairs.contains(pairIndex)) {
     game.tryDefend(pairIndex, cardIndex);
+    updateGameUI();
+    setTimeout(() => {
+      opponent.tryAttack();
       updateGameUI();
-      setTimeout(() => {
-        opponent.tryAttack();
-        updateGameUI();
-      }, 1000);   
-      awaitingCardIndex = null;
-      currentDefendablePairs = null;    
-  }  
+    }, 1000);
+    awaitingCardIndex = null;
+    currentDefendablePairs = null;
+  }
 }
 
 function playAudioWithDelay(audio, delay) {
@@ -568,4 +591,13 @@ function showCard(divID, cardID) {
   rank.style.userSelect = "none";
   CardDiv.appendChild(suit);
   CardDiv.appendChild(rank);
+}
+
+function logState() {
+  const logField = document.getElementById("textLog");
+  let state = game.gameState;
+  logField.innerHTML += `<br> <span> ${state} </span>`;
+  if (game.gameState === gameStates.endGame) {
+    alert(game.endGameText);
+  }
 }

@@ -7,7 +7,7 @@
 }
 
 html {
-  /* overflow: hidden; */
+  overflow: hidden;
 }
 
 body {
@@ -326,4 +326,16 @@ input[type="checkbox"]:checked {
   100% {
     transform: rotate(360deg);
   }
+}
+
+.textLog {  
+  position: absolute;
+  width: 300px;
+  height: 100vh;
+  background-color: black;
+  opacity: 0.2;
+  left:0; 
+  color: white; 
+  padding-left: 20px;
+  padding-top: 20px;
 }
